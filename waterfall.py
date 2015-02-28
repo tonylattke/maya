@@ -96,6 +96,10 @@ class Waterfall(OpenMayaMPx.MPxCommand):
 
 		OpenMaya.MGlobal.clearSelectionList()
 		cmds.gravity(name=self.gravityName,m=9.8,att=0,dx=0,dy=-1,dz=0)
+		OpenMaya.MGlobal.clearSelectionList()
+		cmds.turbulence(name=self.turbulenceHighName,m=50,att=0)
+		OpenMaya.MGlobal.clearSelectionList()
+		cmds.turbulence(name=self.turbulenceLowName,m=5,att=0)
 
 		##################################### Gotas #####################################
 		# Crear sistema y emisor
@@ -111,6 +115,8 @@ class Waterfall(OpenMayaMPx.MPxCommand):
 		cmds.goal(self.dewSystemName, g=surface, w=1, utr=0)
 
 		cmds.connectDynamic(self.dewSystemName, f=self.gravityName)
+		cmds.connectDynamic(self.dewSystemName, f=self.turbulenceLowName)
+		cmds.connectDynamic(self.dewSystemName, f=self.turbulenceHighName)
 
 		# Setear valores
 		cmds.setAttr(self.dewSystemShapeName+".conserve",0.98);
