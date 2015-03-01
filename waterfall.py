@@ -18,6 +18,8 @@ class Waterfall(OpenMayaMPx.MPxCommand):
 	default_spumeRate		= 100
 	default_waterRate		= 100
 	default_floor			= -20
+	default_turbulence_low	= 5
+	default_turbulence_high	= 50
 	
 	def __init__(self):
 		OpenMayaMPx.MPxCommand.__init__(self)
@@ -51,6 +53,8 @@ class Waterfall(OpenMayaMPx.MPxCommand):
 		self.spumeRate 			= Waterfall.default_spumeRate
 		self.waterRate 			= Waterfall.default_waterRate
 		self.floor 				= Waterfall.default_floor
+		self.turbulenceLow 		= Waterfall.default_turbulence_low
+		self.turbulenceHigh		= Waterfall.default_turbulence_high
 
 		# Control
 		self.controllerName		= self.instanceName + '_Control'		
@@ -77,6 +81,10 @@ class Waterfall(OpenMayaMPx.MPxCommand):
 		
 		if (argData.isFlagSet('f')):
 			self.waterRate = argData.flagArgumentDouble('f', 0)
+		if (argData.isFlagSet('tl')):
+			self.turbulenceLow = argData.flagArgumentDouble('f', 0)
+		if (argData.isFlagSet('th')):
+			self.turbulenceHigh = argData.flagArgumentDouble('f', 0)
 	
 	def doIt(self, args):
 		# Procesar argumentos
@@ -93,13 +101,20 @@ class Waterfall(OpenMayaMPx.MPxCommand):
 		cmds.spaceLocator(name=self.controllerName)
 		cmds.addAttr(ln='floor',at='double',defaultValue=self.floor)
 		cmds.addAttr(ln='beginTolerance',at='double',defaultValue=0.3)
+		cmds.addAttr(ln='magnitudeTLow',at='double',defaultValue=self.turbulenceLow)
+		cmds.addAttr(ln='magnitudeTHigh',at='double',defaultValue=self.turbulenceHigh)
 
 		OpenMaya.MGlobal.clearSelectionList()
 		cmds.gravity(name=self.gravityName,m=9.8,att=0,dx=0,dy=-1,dz=0)
 		OpenMaya.MGlobal.clearSelectionList()
-		cmds.turbulence(name=self.turbulenceHighName,m=50,att=0)
+		cmds.turbulence(name=self.turbulenceHighName,att=0)
 		OpenMaya.MGlobal.clearSelectionList()
-		cmds.turbulence(name=self.turbulenceLowName,m=5,att=0)
+		cmds.turbulence(name=self.turbulenceLowName,att=0)
+
+		cmds.expression(s="phaseX = time*135.165;\nphaseY = time+10*135.165;\nphaseZ = time+767*135.165;",o=self.turbulenceHighName,alwaysEvaluate=1)
+		
+		cmds.connectAttr(self.controllerName + '.magnitudeTLow', self.turbulenceLowName + '.magnitude')
+		cmds.connectAttr(self.controllerName + '.magnitudeTHigh', self.turbulenceHighName + '.magnitude')
 
 		##################################### Gotas #####################################
 		# Crear sistema y emisor
@@ -170,6 +185,8 @@ def syntaxCreator():
 	syntax.addFlag('sr', 'spumeRate', OpenMaya.MSyntax.kDouble)
 	syntax.addFlag('wr', 'waterRate', OpenMaya.MSyntax.kDouble)
 	syntax.addFlag('f' , 'floor', OpenMaya.MSyntax.kDouble)
+	syntax.addFlag('tl' , 'turbulenceLow', OpenMaya.MSyntax.kDouble)
+	syntax.addFlag('th' , 'turbulenceHigh', OpenMaya.MSyntax.kDouble)
 	
 	return syntax
 	
