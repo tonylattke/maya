@@ -1,0 +1,4 @@
+window -title "Waterfall - Tony Lattke" -widthHeight 100 200 waterfallWindow;
+    columnLayout -columnAttach "both" 5 -rowSpacing 5 -columnWidth 100;
+    button -label "Create" -command "waterfall";
+showWindow waterfallWindow; 

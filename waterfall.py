@@ -14,9 +14,9 @@ class Waterfall(OpenMayaMPx.MPxCommand):
 	
 	# Valores por defecto
 	default_numTurbulence	= 3
-	default_dewRate  		= 100
-	default_spumeRate		= 100
-	default_waterRate		= 100
+	default_dewRate  		= 20
+	default_spumeRate		= 10
+	default_waterRate		= 20
 	default_floor			= -20
 	default_gravity			= 100
 	default_turbulence_low	= 100
@@ -114,6 +114,23 @@ class Waterfall(OpenMayaMPx.MPxCommand):
 		cmds.addAttr(ln='dewRate',at='double',defaultValue=self.dewRate,minValue=0)
 		cmds.addAttr(ln='spumeRate',at='double',defaultValue=self.spumeRate,minValue=0)
 		cmds.addAttr(ln='waterRate',at='double',defaultValue=self.waterRate,minValue=0)
+		cmds.setAttr(self.controllerName + '.translateX',keyable=False)
+		cmds.setAttr(self.controllerName + '.translateY',keyable=False)
+		cmds.setAttr(self.controllerName + '.translateZ',keyable=False)
+		cmds.setAttr(self.controllerName + '.rotateX',keyable=False)
+		cmds.setAttr(self.controllerName + '.rotateY',keyable=False)
+		cmds.setAttr(self.controllerName + '.rotateZ',keyable=False)
+		cmds.setAttr(self.controllerName + '.scaleX',keyable=False)
+		cmds.setAttr(self.controllerName + '.scaleY',keyable=False)
+		cmds.setAttr(self.controllerName + '.scaleZ',keyable=False)
+		cmds.setAttr(self.controllerName + '.floor',keyable=True)
+		cmds.setAttr(self.controllerName + '.beginTolerance',keyable=True)
+		cmds.setAttr(self.controllerName + '.gravity',keyable=True)
+		cmds.setAttr(self.controllerName + '.magnitudeTLow',keyable=True)
+		cmds.setAttr(self.controllerName + '.magnitudeTHigh',keyable=True)
+		cmds.setAttr(self.controllerName + '.dewRate',keyable=True)
+		cmds.setAttr(self.controllerName + '.spumeRate',keyable=True)
+		cmds.setAttr(self.controllerName + '.waterRate',keyable=True)
 
 		################################ Campos de fuerza ###############################
 		cmds.select( clear=True )
@@ -121,12 +138,12 @@ class Waterfall(OpenMayaMPx.MPxCommand):
 		cmds.connectAttr(self.controllerName + '.gravity', self.gravityName + '.magnitude')
 		
 		cmds.select( clear=True )
-		cmds.turbulence(name=self.turbulenceLowName,att=0)
+		cmds.turbulence(name=self.turbulenceLowName,att=0,f=0.8,nsr=0.6)
 		cmds.expression(s="phaseX = rand(1,100)*10;\nphaseY = rand(1,100)*20;\nphaseZ = rand(1,100)*30;",o=self.turbulenceLowName,alwaysEvaluate=1)
 		cmds.connectAttr(self.controllerName + '.magnitudeTLow', self.turbulenceLowName + '.magnitude')
 
 		cmds.select( clear=True )
-		cmds.turbulence(name=self.turbulenceHighName,att=0)
+		cmds.turbulence(name=self.turbulenceHighName,att=0,f=0.8,nsr=0.7)
 		cmds.expression(s="phaseX = time*135.165;\nphaseY = time+10*135.165;\nphaseZ = time+767*135.165;",o=self.turbulenceHighName,alwaysEvaluate=1)
 		cmds.connectAttr(self.controllerName + '.magnitudeTHigh', self.turbulenceHighName + '.magnitude')
 
@@ -159,8 +176,8 @@ class Waterfall(OpenMayaMPx.MPxCommand):
 		cmds.addAttr(ln='goalV0', dt='doubleArray')
 		cmds.addAttr(ln='opacityPP', dt='doubleArray')
 		cmds.addAttr(ln='opacityPP0', dt='doubleArray')
-		cmds.dynExpression(self.dewSystemShapeName, s="goalV = 0;\ngoalU = rand(1);\ngoalPP = rand(0.7,1);\nopacityPP = 0;",c=1)
-		cmds.dynExpression(self.dewSystemShapeName, s="goalV += rand(0.1);\nif (goalV > " + self.controllerName + ".beginTolerance){\n\topacityPP = 1;\n}\nif (goalV > 0.99){\n\tgoalPP = 0;\n\tvector $pos = position;\n\tif ($pos.y < " + self.controllerName + ".floor){\n\t\tlifespanPP = 0;\n\t}\n};",rbd=1)
+		cmds.dynExpression(self.dewSystemShapeName, s="goalV = 0;\ngoalU = rand(1);\nopacityPP = 0;",c=1)
+		cmds.dynExpression(self.dewSystemShapeName, s="goalV += rand(0.1);\nif (goalV > " + self.controllerName + ".beginTolerance){\n\topacityPP = 1;\n}\nif (goalV > 0.99){\n\tgoalPP = 0;\n\tvector $pos = position;\n\tif ($pos.y < " + self.controllerName + ".floor){\n\t\tlifespanPP = 0;\n\t}\n}",rbd=1)
 
 		##################################### Espuma ####################################
 		# Crear sistema y emisor
@@ -191,8 +208,8 @@ class Waterfall(OpenMayaMPx.MPxCommand):
 		cmds.addAttr(ln='goalV0', dt='doubleArray')
 		cmds.addAttr(ln='opacityPP', dt='doubleArray')
 		cmds.addAttr(ln='opacityPP0', dt='doubleArray')
-		cmds.dynExpression(self.spumeSystemShapeName, s="goalV = 0;\ngoalU = rand(1);\ngoalPP = rand(0.7,1);\nopacityPP = 0;",c=1)
-		cmds.dynExpression(self.spumeSystemShapeName, s="goalV += rand(0.1);\nif (goalV > " + self.controllerName + ".beginTolerance){\n\topacityPP = 1;\n}\nif (goalV > 0.99){\n\tgoalPP = 0;\n\tvector $pos = position;\n\tif ($pos.y < " + self.controllerName + ".floor){\n\t\tlifespanPP = 0;\n\t}\n};",rbd=1)
+		cmds.dynExpression(self.spumeSystemShapeName, s="goalV = 0;\ngoalU = rand(1);\nopacityPP = 0;",c=1)
+		cmds.dynExpression(self.spumeSystemShapeName, s="goalV += rand(0.1);\nif (goalV > " + self.controllerName + ".beginTolerance){\n\topacityPP = 1;\n}\nif (goalV > 0.99){\n\tgoalPP = 0;\n\tvector $pos = position;\n\tif ($pos.y < " + self.controllerName + ".floor){\n\t\tlifespanPP = 0;\n\t}\n}",rbd=1)
 
 		###################################### Agua #####################################
 		# Crear sistema y emisor
@@ -228,9 +245,9 @@ class Waterfall(OpenMayaMPx.MPxCommand):
 		cmds.addAttr(ln='goalV', dt='doubleArray')
 		cmds.addAttr(ln='goalV0', dt='doubleArray')
 		cmds.dynExpression(self.waterSystemShapeName, s="goalV = 0;\ngoalU = rand(1);\nif (rand(1) < 0.25){\n\tradiusPP = rand(0.7);\n} else {\n\tradiusPP = rand(1,2);\n}",c=1)
-		cmds.dynExpression(self.waterSystemShapeName, s="goalV += rand(0.1);\nif (goalV > 0.99){\n\tgoalPP = 0;\n\tvector $pos = position;\n\tif ($pos.y < " + self.controllerName + ".floor){\n\t\tlifespanPP = 0;\n\t}\n};",rbd=1)
+		cmds.dynExpression(self.waterSystemShapeName, s="goalV += rand(0.1);\nif (goalV > 0.99){\n\tgoalPP = 0;\n\tvector $pos = position;\n\tif ($pos.y < " + self.controllerName + ".floor){\n\t\tlifespanPP = 0;\n\t}\n}",rbd=1)
 
-		cmds.select(controllerName)
+		cmds.select(self.controllerName)
 		# cmds.getAttr()
 		self.dagModifier.doIt()
 	
