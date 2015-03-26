@@ -1,4 +1,31 @@
-window -title "Waterfall - Tony Lattke" -widthHeight 100 200 waterfallWindow;
-    columnLayout -columnAttach "both" 5 -rowSpacing 5 -columnWidth 100;
-    button -label "Create" -command "waterfall";
-showWindow waterfallWindow; 
+int $drv = 20; // Dew rate
+int $srv = 10; // Spume rate
+int $wrv = 20; // Water rate
+
+window -title "Waterfall - Tony Lattke" -widthHeight 400 200;
+    columnLayout;
+        text -label "Select a mesh as an Emitter";
+        text -label "";
+        intSliderGrp -label "Dew Rate" -field true -cc getDewRateValue -dc getDewRateValue -minValue 0 -maxValue 1000 -value $drv dewRateSlider;
+        intSliderGrp -label "Spume Rate" -field true -cc getSpumeRateValue -dc getSpumeRateValue -minValue 0 -maxValue 1000 -value $srv spumeRateSlider;
+        intSliderGrp -label "Water Rate" -field true -cc getWaterRateValue -dc getWaterRateValue -minValue 0 -maxValue 1000 -value $wrv waterRateSlider;
+        text -label "";
+        button -label "Create" -command "CreateWaterfall";
+showWindow; 
+
+proc getDewRateValue() {
+    $drv = `intSliderGrp -q -v dewRateSlider`;
+}
+
+proc getSpumeRateValue() {
+    $srv = `intSliderGrp -q -v spumeRateSlider`;
+}
+
+proc getWaterRateValue() {
+    $wrv = `intSliderGrp -q -v waterRateSlider`;
+}
+
+proc CreateWaterfall(){
+     waterfall; 
+     //waterfall -dr $drv -sr $srv -wr $wrv;
+}
