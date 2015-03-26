@@ -1,16 +1,26 @@
-int $drv = 20; // Dew rate
-int $srv = 10; // Spume rate
-int $wrv = 20; // Water rate
+int $drv = 20;   // Dew rate
+int $srv = 10;   // Spume rate
+int $wrv = 20;   // Water rate
+float $f = -20;  // Floor position on Y
+float $g = 100;  // Gravity
+float $tl = 100; // Turbulence low
+float $th = 100; // Turbulence high
 
-window -title "Waterfall - Tony Lattke" -widthHeight 400 200;
+window -title "Waterfall - Tony Lattke" -widthHeight 400 240;
     columnLayout;
         text -label "Select a mesh as an Emitter";
         text -label "";
+        // Dew, Spume and Water rates
         intSliderGrp -label "Dew Rate" -field true -cc getDewRateValue -dc getDewRateValue -minValue 0 -maxValue 1000 -value $drv dewRateSlider;
         intSliderGrp -label "Spume Rate" -field true -cc getSpumeRateValue -dc getSpumeRateValue -minValue 0 -maxValue 1000 -value $srv spumeRateSlider;
         intSliderGrp -label "Water Rate" -field true -cc getWaterRateValue -dc getWaterRateValue -minValue 0 -maxValue 1000 -value $wrv waterRateSlider;
         text -label "";
-        button -label "Create" -command "CreateWaterfall";
+        floatSliderGrp -label "Floor position" -field true -cc getFloorValue -dc getFloorValue -minValue -1000 -maxValue 1000 -value $f floorSlider;
+        floatSliderGrp -label "Gravity" -field true -cc getGravityValue -dc getGravityValue -minValue -1000 -maxValue 1000 -value $g gravitySlider;
+        floatSliderGrp -label "Turbulence Low" -field true -cc getTLValue -dc getTLValue -minValue -1000 -maxValue 1000 -value $tl tLowSlider;
+        floatSliderGrp -label "Turbulence High" -field true -cc getTHValue -dc getTHValue -minValue -1000 -maxValue 1000 -value $th tHighSlider;
+        text -label "";
+        button -label "Create" -command "CreateWaterfall" -width 397;
 showWindow; 
 
 proc getDewRateValue() {
@@ -23,6 +33,25 @@ proc getSpumeRateValue() {
 
 proc getWaterRateValue() {
     $wrv = `intSliderGrp -q -v waterRateSlider`;
+}
+
+proc getFloorValue() {
+    $f = `floatSliderGrp -q -v floorSlider`;
+}
+
+
+proc getGravityValue() {
+    $g = `floatSliderGrp -q -v gravitySlider`;
+}
+
+
+proc getTLValue() {
+    $tl = `floatSliderGrp -q -v tLowSlider`;
+}
+
+
+proc getTHValue() {
+    $th = `floatSliderGrp -q -v tHighSlider`;
 }
 
 proc CreateWaterfall(){
