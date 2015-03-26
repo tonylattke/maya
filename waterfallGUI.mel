@@ -11,50 +11,26 @@ window -title "Waterfall - Tony Lattke" -widthHeight 400 240;
         text -label "Select a mesh as an Emitter";
         text -label "";
         // Dew, Spume and Water rates
-        intSliderGrp -label "Dew Rate" -field true -cc getDewRateValue -dc getDewRateValue -minValue 0 -maxValue 1000 -value $drv dewRateSlider;
-        intSliderGrp -label "Spume Rate" -field true -cc getSpumeRateValue -dc getSpumeRateValue -minValue 0 -maxValue 1000 -value $srv spumeRateSlider;
-        intSliderGrp -label "Water Rate" -field true -cc getWaterRateValue -dc getWaterRateValue -minValue 0 -maxValue 1000 -value $wrv waterRateSlider;
+        intSliderGrp -label "Dew Rate" -field true -minValue 0 -maxValue 1000 -value $drv dewRateSlider;
+        intSliderGrp -label "Spume Rate" -field true -minValue 0 -maxValue 1000 -value $srv spumeRateSlider;
+        intSliderGrp -label "Water Rate" -field true -minValue 0 -maxValue 1000 -value $wrv waterRateSlider;
         text -label "";
-        floatSliderGrp -label "Floor position" -field true -cc getFloorValue -dc getFloorValue -minValue -1000 -maxValue 1000 -value $f floorSlider;
-        floatSliderGrp -label "Gravity" -field true -cc getGravityValue -dc getGravityValue -minValue -1000 -maxValue 1000 -value $g gravitySlider;
-        floatSliderGrp -label "Turbulence Low" -field true -cc getTLValue -dc getTLValue -minValue -1000 -maxValue 1000 -value $tl tLowSlider;
-        floatSliderGrp -label "Turbulence High" -field true -cc getTHValue -dc getTHValue -minValue -1000 -maxValue 1000 -value $th tHighSlider;
+        // Floor, Gravity and Turbulences controls
+        floatSliderGrp -label "Floor position" -field true -minValue -1000 -maxValue 1000 -value $f floorSlider;
+        floatSliderGrp -label "Gravity" -field true -minValue -1000 -maxValue 1000 -value $g gravitySlider;
+        floatSliderGrp -label "Turbulence Low" -field true -minValue -1000 -maxValue 1000 -value $tl tLowSlider;
+        floatSliderGrp -label "Turbulence High" -field true -minValue -1000 -maxValue 1000 -value $th tHighSlider;
         text -label "";
         button -label "Create" -command "CreateWaterfall" -width 397;
 showWindow; 
 
-proc getDewRateValue() {
-    $drv = `intSliderGrp -q -v dewRateSlider`;
-}
-
-proc getSpumeRateValue() {
-    $srv = `intSliderGrp -q -v spumeRateSlider`;
-}
-
-proc getWaterRateValue() {
-    $wrv = `intSliderGrp -q -v waterRateSlider`;
-}
-
-proc getFloorValue() {
-    $f = `floatSliderGrp -q -v floorSlider`;
-}
-
-
-proc getGravityValue() {
-    $g = `floatSliderGrp -q -v gravitySlider`;
-}
-
-
-proc getTLValue() {
-    $tl = `floatSliderGrp -q -v tLowSlider`;
-}
-
-
-proc getTHValue() {
-    $th = `floatSliderGrp -q -v tHighSlider`;
-}
-
 proc CreateWaterfall(){
-     waterfall; 
-     //waterfall -dr $drv -sr $srv -wr $wrv;
+     $drv = `intSliderGrp -q -v dewRateSlider`;
+     $srv = `intSliderGrp -q -v spumeRateSlider`;
+     $wrv = `intSliderGrp -q -v waterRateSlider`;
+     $f = `floatSliderGrp -q -v floorSlider`;
+     $g = `floatSliderGrp -q -v gravitySlider`;
+     $tl = `floatSliderGrp -q -v tLowSlider`;
+     $th = `floatSliderGrp -q -v tHighSlider`;
+     waterfall -dr $drv -sr $srv -wr $wrv -f $f -g $g -tl $tl -th $th;
 }
